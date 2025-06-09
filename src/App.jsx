@@ -6,7 +6,8 @@ const CARDS = ['A', 'B', 'C'];
 
 function App() {
     const [selectedCards, setSelectedCards] = useState(new Set());
-    const [gameState, setGameState] = useState('playing');
+    // State to track the game state: 'pre-deal', 'playing', 'won', or 'lost'
+    const [gameState, setGameState] = useState('pre-deal');
     const [score, setScore] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [highScore, setHighScore] = useState(0);
@@ -24,14 +25,23 @@ function App() {
                 // Flip each card with a stagger
                 CARDS.forEach((_, i) => {
                     setTimeout(() => {
-                        setFlipped(f => {
+                        setFlipped((f) => {
                             const arr = [...f];
                             arr[i] = true;
                             return arr;
                         });
                     }, 400 + i * 250);
                 });
-            }, 400);
+            }, 100);
+        }
+    }, [gameState]);
+
+    useEffect(() => {
+        if (gameState === 'pre-deal') {
+            const id = setTimeout(() => {
+                setGameState('playing');
+            }, 5000); // Transition to 'playing' after 1 second
+            return () => clearTimeout(id);
         }
     }, [gameState]);
 
@@ -67,6 +77,7 @@ function App() {
 
         setSelectedCards(new Set([...selectedCards, card]));
         setScore(score + 1);
+        setGameState('pre-deal');
     };
 
     const handlePlayAgain = () => {
@@ -85,7 +96,7 @@ function App() {
                 <span>Score: {score}</span>
                 <span>High Score: {highScore}</span>
             </div>
-            {gameState === 'playing' && (
+            {(gameState === 'pre-deal' || gameState === 'playing') && (
                 <main>
                     <div className="card-row">
                         {CARDS.map((card, i) => (
@@ -93,17 +104,23 @@ function App() {
                                 key={card}
                                 className={`card-outer`}
                                 style={{
-                                    '--deal-x': dealt ? `${(i - 1) * 120}px` : '0px',
+                                    '--deal-x': dealt
+                                        ? `${(i - 1) * 120}px`
+                                        : '0px',
                                     '--deal-y': dealt ? '0px' : '-80px',
                                     zIndex: 10 - i,
                                 }}
                             >
                                 <div
-                                    className={`card-inner${flipped[i] ? ' flipped' : ''}`}
+                                    className={`card-inner${
+                                        flipped[i] ? ' flipped' : ''
+                                    }`}
                                     onClick={() => handleCardClick(card, i)}
                                 >
                                     <div className="card-face card-back" />
-                                    <div className="card-face card-front">{card}</div>
+                                    <div className="card-face card-front">
+                                        {card}
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -118,7 +135,9 @@ function App() {
             {showModal && (
                 <div className="modal">
                     <div className="modal-box">
-                        <h2>{gameState === 'won' ? 'You Won!' : 'You Lost!'}</h2>
+                        <h2>
+                            {gameState === 'won' ? 'You Won!' : 'You Lost!'}
+                        </h2>
                         <p>Your score: {score}</p>
                         <button onClick={handlePlayAgain}>Play Again</button>
                     </div>
