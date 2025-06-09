@@ -1,37 +1,60 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import './reset.css';
 import './App.css';
 
 function App() {
-    const [count, setCount] = useState(0);
+    const [selectedCards, setSelectedCards] = useState(new Set());
+    const [gameState, setGameState] = useState('playing'); // 'playing', 'won', 'lost'
+    const [score, setScore] = useState(0);
+
+    const handleCardClick = (card) => {
+        if (gameState !== 'playing') return;
+
+        if (selectedCards.has(card)) {
+            // Card already selected, lose
+            setGameState('lost');
+            return;
+        }
+
+        if (score + 1 === 3) {
+            // All cards matched, win
+            setGameState('won');
+            return;
+        }
+
+        // Select the card
+        setSelectedCards(new Set([...selectedCards, card]));
+        setScore(score + 1);
+    };
 
     return (
         <>
-            <div>
-                <a href="https://vite.dev" target="_blank">
-                    <img src={viteLogo} className="logo" alt="Vite logo" />
-                </a>
-                <a href="https://react.dev" target="_blank">
-                    <img
-                        src={reactLogo}
-                        className="logo react"
-                        alt="React logo"
-                    />
-                </a>
-            </div>
-            <h1>Vite + React</h1>
-            <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
-                    count is {count}
-                </button>
-                <p>
-                    Edit <code>src/App.jsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
-            </p>
+            {gameState === 'playing' ? (
+                <>
+                    <nav>Memory Card Game</nav>
+                    <main>
+                        <div className="card" onClick={() => handleCardClick('A')}>A</div>
+                        <div className="card" onClick={() => handleCardClick('B')}>B</div>
+                        <div className="card" onClick={() => handleCardClick('C')}>C</div>
+                    </main>
+                </>
+            ) : (
+                <div className="modal">
+                    <div className="modal-box">
+                        <h2>{gameState === 'won' ? 'You Won!' : 'You Lost!'}</h2>
+                        <p>Your score: {score}</p>
+                        <button
+                            onClick={() => {
+                                setSelectedCards(new Set());
+                                setGameState('playing');
+                                setScore(0);
+                            }}
+                        >
+                            Play Again
+                        </button>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
