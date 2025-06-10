@@ -1,55 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import CardRow from './CardRow.jsx';
 import './reset.css';
 import './App.css';
 
-const CARDS = ['A', 'B', 'C'];
+const INITIALCARDS = ['A', 'B', 'C'];
+const SHUFFLETIMES = 10; // Number of times to shuffle the cards
 
 function App() {
-    const [selectedCards, setSelectedCards] = useState(new Set());
     // State to track the game state: 'pre-deal', 'playing', 'won', or 'lost'
     const [gameState, setGameState] = useState('pre-deal');
     const [score, setScore] = useState(0);
     const [showModal, setShowModal] = useState(false);
-    const [highScore, setHighScore] = useState(0);
-    const [dealt, setDealt] = useState(false);
-    const [flipped, setFlipped] = useState([false, false, false]);
-
-    useEffect(() => {
-        // Start with all cards face down and stacked
-        setDealt(false);
-        setFlipped([false, false, false]);
-        if (gameState === 'playing') {
-            // Deal cards after a short delay
-            setTimeout(() => {
-                setDealt(true);
-                // Flip each card with a stagger
-                CARDS.forEach((_, i) => {
-                    setTimeout(() => {
-                        setFlipped((f) => {
-                            const arr = [...f];
-                            arr[i] = true;
-                            return arr;
-                        });
-                    }, 400 + i * 250);
-                });
-            }, 100);
-        }
-    }, [gameState]);
-
-    useEffect(() => {
-        if (gameState === 'pre-deal') {
-            const id = setTimeout(() => {
-                setGameState('playing');
-            }, 5000); // Transition to 'playing' after 1 second
-            return () => clearTimeout(id);
-        }
-    }, [gameState]);
-
-    useEffect(() => {
-        if (gameState === 'won') {
-            setHighScore((prev) => Math.max(prev, score + 1));
-        }
-    }, [gameState, score]);
+    const highScore = useRef(0);
 
     useEffect(() => {
         if (gameState === 'won' || gameState === 'lost') {
@@ -61,25 +23,6 @@ function App() {
         }
     }, [gameState]);
 
-    const handleCardClick = (card, idx) => {
-        if (gameState !== 'playing') return;
-        if (!flipped[idx]) return; // Ignore clicks before flip
-
-        if (selectedCards.has(card)) {
-            setGameState('lost');
-            return;
-        }
-
-        if (score + 1 === 3) {
-            setGameState('won');
-            return;
-        }
-
-        setSelectedCards(new Set([...selectedCards, card]));
-        setScore(score + 1);
-        setGameState('pre-deal');
-    };
-
     const handlePlayAgain = () => {
         setSelectedCards(new Set());
         setGameState('playing');
@@ -87,6 +30,7 @@ function App() {
         setShowModal(false);
     };
 
+    highScore.current = Math.max(highScore.current, score);
     return (
         <>
             <header className="header">
@@ -94,39 +38,17 @@ function App() {
             </header>
             <div className="infobox">
                 <span>Score: {score}</span>
-                <span>High Score: {highScore}</span>
+                <span>High Score: {highScore.current}</span>
             </div>
-            {(gameState === 'pre-deal' || gameState === 'playing') && (
-                <main>
-                    <div className="card-row">
-                        {CARDS.map((card, i) => (
-                            <div
-                                key={card}
-                                className={`card-outer`}
-                                style={{
-                                    '--deal-x': dealt
-                                        ? `${(i - 1) * 120}px`
-                                        : '0px',
-                                    '--deal-y': dealt ? '0px' : '-80px',
-                                    zIndex: 10 - i,
-                                }}
-                            >
-                                <div
-                                    className={`card-inner${
-                                        flipped[i] ? ' flipped' : ''
-                                    }`}
-                                    onClick={() => handleCardClick(card, i)}
-                                >
-                                    <div className="card-face card-back" />
-                                    <div className="card-face card-front">
-                                        {card}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </main>
-            )}
+
+            <CardRow
+                initCards={INITIALCARDS}
+                gameState={gameState}
+                setGameState={setGameState}
+                score={score}
+                setScore={setScore}
+            />
+
             {(gameState === 'won' || gameState === 'lost') && !showModal && (
                 <div className="status-message">
                     <h2>{gameState === 'won' ? 'You Won!' : 'You Lost!'}</h2>
