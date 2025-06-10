@@ -1,9 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import CardRow from './CardRow.jsx';
 import './reset.css';
 import './App.css';
 
-const INITIALCARDS = ['A', 'B', 'C'];
+// const INITIALCARDS = ['A', 'B', 'C'];
+const INITIALCARDS = [
+    { id: uuidv4(), component: <>A</> },
+    { id: uuidv4(), component: <>B</> },
+    { id: uuidv4(), component: <>C</> },
+    { id: uuidv4(), component: <>D</> },
+    { id: uuidv4(), component: <>E</> },
+    { id: uuidv4(), component: <>F</> },
+    { id: uuidv4(), component: <>G</> },
+    { id: uuidv4(), component: <>H</> },
+    { id: uuidv4(), component: <>I</> },
+    { id: uuidv4(), component: <>J</> },
+    { id: uuidv4(), component: <>K</> },
+    { id: uuidv4(), component: <>L</> },
+];
 const SHUFFLETIMES = 10; // Number of times to shuffle the cards
 
 export default function App() {
@@ -31,12 +46,12 @@ export default function App() {
         setShowModal(false);
     };
 
-    if (gameState === 'pre-deal') {
-        //allow some time for the cards to return to "deal" state
-        setTimeout(() => {
-            setGameState('shuffle');
-        }, 500);
-    }
+    // if (gameState === 'pre-deal') {
+    //     //allow some time for the cards to return to "deal" state
+    //     setTimeout(() => {
+    //         setGameState('shuffle');
+    //     }, 500);
+    // }
 
     highScore.current = Math.max(highScore.current, score);
     return (
@@ -49,15 +64,17 @@ export default function App() {
                 <span>High Score: {highScore.current}</span>
             </div>
 
-            <CardRow
-                initCards={INITIALCARDS}
-                gameState={gameState}
-                setGameState={setGameState}
-                score={score}
-                setScore={setScore}
-                selectedCards={selectedCards}
-                setSelectedCards={setSelectedCards}
-            />
+            <main>
+                <CardRow
+                    initCards={INITIALCARDS}
+                    gameState={gameState}
+                    setGameState={setGameState}
+                    score={score}
+                    setScore={setScore}
+                    selectedCards={selectedCards}
+                    setSelectedCards={setSelectedCards}
+                />
+            </main>
 
             {(gameState === 'won' || gameState === 'lost') && !showModal && (
                 <div className="status-message">

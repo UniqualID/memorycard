@@ -14,6 +14,8 @@ export default function CardRow({
     const [dealt, setDealt] = useState(false);
     const [flipped, setFlipped] = useState([false, false, false]);
     const cardsRef = useRef(new Map());
+    const dummyCardsRef = useRef(new Map());
+    const offsets = useRef([]);
 
     useEffect(() => {
         // Start with all cards face down and stacked
@@ -64,13 +66,13 @@ export default function CardRow({
 
     useLayoutEffect(() => {
         const newRects = new Map();
-        cards.forEach((key, i) => {
-            const el = cardsRef.current.get(key);
+        cards.forEach((card) => {
+            const el = cardsRef.current.get(card.id);
             if (!el) return;
             const newRect = el.getBoundingClientRect();
-            newRects.set(key, newRect);
+            newRects.set(card.id, newRect);
 
-            const prev = firstRectsRef.current.get(key);
+            const prev = firstRectsRef.current.get(card.id);
             if (prev) {
                 const dx = prev.left - newRect.left;
                 const dy = prev.top - newRect.top;
@@ -91,11 +93,27 @@ export default function CardRow({
         const id = setTimeout(() => setGameState('shuffle'), 250);
         return () => clearTimeout(id);
     }, [cards]);
-    const handleCardClick = (card, idx) => {
+
+    useEffect(() => {
+        cards.forEach((card, i) => {
+            const el = cardsRef.current.get(card.id);
+            const dummyEl = dummyCardsRef.current.get(i);
+            if (!el || !dummyEl) return;
+            const rect = el.getBoundingClientRect();
+            const dummyRect = dummyEl.getBoundingClientRect();
+            offsets.current.push({
+                dx: dummyRect.left - rect.left,
+                dy: dummyRect.top - rect.top,
+            });
+        });
+        console.log(offsets);
+    }, [window.innerWidth, cardsRef.length, dummyCardsRef.length]);
+
+    const handleCardClick = (key, idx) => {
         if (gameState !== 'playing') return;
         if (!flipped[idx]) return; // Ignore clicks before flip
 
-        if (selectedCards.has(card)) {
+        if (selectedCards.has(key)) {
             setGameState('lost');
             return;
         }
@@ -105,38 +123,64 @@ export default function CardRow({
             return;
         }
 
-        setSelectedCards(new Set([...selectedCards, card]));
+        setSelectedCards(new Set([...selectedCards, key]));
         setScore(score + 1);
         setGameState('pre-deal');
     };
+
     return (
-        <div className="card-row">
-            {cards.map((card, i) => (
-                <div
-                    key={card}
-                    ref={(el) => {
-                        if (el) {
-                            cardsRef.current.set(card, el);
-                        } else {
-                            cardsRef.current.delete(card);
-                        }
-                    }}
-                    className={`card-outer`}
-                    style={{
-                        '--deal-x': dealt ? `${(i - 1) * 120}px` : '0px',
-                        '--deal-y': dealt ? '80px' : '0px',
-                        zIndex: 10 - i,
-                    }}
-                >
+        <>
+            <div className="card-row">
+                {cards.map((card, i) => (
                     <div
-                        className={`card-inner${flipped[i] ? ' flipped' : ''}`}
-                        onClick={() => handleCardClick(card, i)}
+                        key={card.id}
+                        ref={(el) => {
+                            if (el) {
+                                cardsRef.current.set(card.id, el);
+                            } else {
+                                cardsRef.current.delete(card.id);
+                            }
+                        }}
+                        className={`card-outer`}
+                        style={{
+                            '--deal-x': dealt
+                                ? `${offsets.current[i]['dx']}px`
+                                : '0px',
+                            '--deal-y': dealt
+                                ? `${offsets.current[i]['dy']}px`
+                                : '0px',
+                        }}
                     >
-                        <div className="card-face card-back" />
-                        <div className="card-face card-front">{card}</div>
+                        <div
+                            className={`card-inner${
+                                flipped[i] ? ' flipped' : ''
+                            }`}
+                            onClick={() => handleCardClick(card.id, i)}
+                        >
+                            <div className="card-face card-back" />
+                            <div className="card-face card-front">
+                                {card.component}
+                            </div>
+                        </div>
                     </div>
-                </div>
-            ))}
-        </div>
+                ))}
+            </div>
+            <div className="card-display">
+                {cards.map((_, i) => (
+                    <div
+                        className="dummy-card"
+                        style={{ outline: '1px solid red' }}
+                        key={i}
+                        ref={(el) => {
+                            if (el) {
+                                dummyCardsRef.current.set(i, el);
+                            } else {
+                                dummyCardsRef.current.delete(i.id);
+                            }
+                        }}
+                    ></div>
+                ))}
+            </div>
+        </>
     );
 }
