@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import CardRow from './CardRow.jsx';
 import './reset.css';
 import './App.css';
@@ -6,12 +6,13 @@ import './App.css';
 const INITIALCARDS = ['A', 'B', 'C'];
 const SHUFFLETIMES = 10; // Number of times to shuffle the cards
 
-function App() {
-    // State to track the game state: 'pre-deal', 'playing', 'won', or 'lost'
+export default function App() {
+    // State to track the game state: 'pre-deal', 'shuffle', 'playing', 'won', or 'lost'
     const [gameState, setGameState] = useState('pre-deal');
     const [score, setScore] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const highScore = useRef(0);
+    const [selectedCards, setSelectedCards] = useState(new Set());
 
     useEffect(() => {
         if (gameState === 'won' || gameState === 'lost') {
@@ -30,6 +31,13 @@ function App() {
         setShowModal(false);
     };
 
+    if (gameState === 'pre-deal') {
+        //allow some time for the cards to return to "deal" state
+        setTimeout(() => {
+            setGameState('shuffle');
+        }, 500);
+    }
+
     highScore.current = Math.max(highScore.current, score);
     return (
         <>
@@ -47,6 +55,8 @@ function App() {
                 setGameState={setGameState}
                 score={score}
                 setScore={setScore}
+                selectedCards={selectedCards}
+                setSelectedCards={setSelectedCards}
             />
 
             {(gameState === 'won' || gameState === 'lost') && !showModal && (
@@ -68,5 +78,3 @@ function App() {
         </>
     );
 }
-
-export default App;
