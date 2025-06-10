@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import CardRow from './CardRow.jsx';
+import StartForm from './StartForm.jsx';
 import './reset.css';
 import './App.css';
 
@@ -29,6 +30,8 @@ export default function App() {
     const [showEndModal, setShowEndModal] = useState(false);
     const highScore = useRef(0);
     const [selectedCards, setSelectedCards] = useState(new Set());
+	const [cardType, setCardType] = useState('');
+	const [difficultyLevel, setDifficultyLevel] = useState('');
 
     useEffect(() => {
         if (gameState === 'won' || gameState === 'lost') {
@@ -57,90 +60,12 @@ export default function App() {
     highScore.current = Math.max(highScore.current, score);
     if (gameState === 'start') {
         return (
-            <>
-                <div className="modal">
-                    <div className="modal-box start-modal">
-                        <h1>Welcome to the Memory Card Game!</h1>
-                        <h2>
-                            Please select the type of card you would like to
-                            play with, along with the difficulty level.
-                        </h2>
-                        <form id="startingForm">
-                            <div className="form-group">
-                                <label>Card Type:</label>
-                                <div className="radio-group">
-                                    <label className="radio-label">
-                                        <input
-                                            type="radio"
-                                            name="cardType"
-                                            value="letters"
-                                            defaultChecked
-                                        />
-                                        <span>Letters</span>
-                                    </label>
-                                    <label className="radio-label">
-                                        <input
-                                            type="radio"
-                                            name="cardType"
-                                            value="numbers"
-                                        />
-                                        <span>Numbers</span>
-                                    </label>
-                                    <label className="radio-label">
-                                        <input
-                                            type="radio"
-                                            name="cardType"
-                                            value="symbols"
-                                        />
-                                        <span>Symbols</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Difficulty Level:</label>
-                                <div className="radio-group">
-                                    <label className="radio-label">
-                                        <input
-                                            type="radio"
-                                            name="difficultyLevel"
-                                            value="easy"
-                                            defaultChecked
-                                        />
-                                        <span>Easy</span>
-                                    </label>
-                                    <label className="radio-label">
-                                        <input
-                                            type="radio"
-                                            name="difficultyLevel"
-                                            value="medium"
-                                        />
-                                        <span>Medium</span>
-                                    </label>
-                                    <label className="radio-label">
-                                        <input
-                                            type="radio"
-                                            name="difficultyLevel"
-                                            value="hard"
-                                        />
-                                        <span>Hard</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setGameState('pre-deal');
-                                    setShowStartModal(false);
-                                }}
-                            >
-                                Start Game
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </>
+            <StartForm
+                setCardType={setCardType}
+                setDifficultyLevel={setDifficultyLevel}
+                setGameState={setGameState}
+                setShowStartModal={setShowStartModal}
+            />
         );
     }
     return (
