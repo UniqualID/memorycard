@@ -46,12 +46,12 @@ export default function App() {
         setShowModal(false);
     };
 
-    // if (gameState === 'pre-deal') {
-    //     //allow some time for the cards to return to "deal" state
-    //     setTimeout(() => {
-    //         setGameState('shuffle');
-    //     }, 500);
-    // }
+    if (gameState === 'pre-deal') {
+        //allow some time for the cards to return to "deal" state
+        setTimeout(() => {
+            setGameState('shuffle');
+        }, 100);
+    }
 
     highScore.current = Math.max(highScore.current, score);
     return (

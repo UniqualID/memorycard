@@ -1,6 +1,9 @@
 import React, { useRef, useLayoutEffect, useEffect, useState } from 'react';
 
-const SHUFFLETIMES = 10; // Number of times to shuffle the cards
+const FLIPINTERVAL = 200;
+const SHUFFLEINTERVAL = 400;
+const SHUFFLEDURATION = 300; // Duration for shuffle animation
+const SHUFFLETIMES = 6; // Number of times to shuffle the cards
 export default function CardRow({
     initCards,
     gameState,
@@ -33,7 +36,7 @@ export default function CardRow({
                             arr[i] = true;
                             return arr;
                         });
-                    }, 400 + i * 250);
+                    }, i * FLIPINTERVAL);
                 });
             }, 100);
         }
@@ -46,7 +49,7 @@ export default function CardRow({
                 const id = setTimeout(() => {
                     const newCards = [...cards].sort(() => Math.random() - 0.5);
                     setCards(newCards);
-                }, i * 250 + 500);
+                }, i * SHUFFLEINTERVAL + 500);
                 intervalIds.push(id);
             }
             // After shuffling, set the game state to 'playing'
@@ -54,7 +57,7 @@ export default function CardRow({
             intervalIds.push(
                 setTimeout(() => {
                     setGameState('playing');
-                }, SHUFFLETIMES * 250 + 600)
+                }, SHUFFLETIMES * SHUFFLEINTERVAL + 600)
             );
             return () => {
                 intervalIds.forEach(clearTimeout);
@@ -84,7 +87,8 @@ export default function CardRow({
                     // Force reflow to apply the transform immediately
                     void el.offsetWidth;
 
-                    el.style.transition = 'transform 250ms';
+                    el.style.transition = `transform ${SHUFFLEDURATION}ms linear`;
+                    // el.style.transition = `transform 2s cubic-bezier(0.4, 2, 0.6, 1)`;
                     el.style.transform = '';
                 }
             }
