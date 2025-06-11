@@ -44,9 +44,17 @@ export default function StartForm({ setCardType, setDifficultyLevel, setGameStat
                                 <input
                                     type="radio"
                                     name="cardType"
-                                    value="symbols"
+                                    value="pokemon"
                                 />
-                                <span>Symbols</span>
+                                <span>Pokemon</span>
+                            </label>
+                            <label className="radio-label">
+                                <input
+                                    type="radio"
+                                    name="cardType"
+                                    value="rickandmorty"
+                                />
+                                <span>Rick and Morty</span>
                             </label>
                         </div>
                     </div>

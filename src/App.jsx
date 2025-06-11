@@ -4,6 +4,9 @@ import CardRow from './CardRow.jsx';
 import StartForm from './StartForm.jsx';
 import Loading from './Loading.jsx';
 import PlayingCards from './utils/playingcards.jsx';
+import PokemonCards from './utils/pokemoncards.jsx';
+import NumberCards from './utils/numbercards.jsx';
+import RickAndMortyCards from './utils/rickandmortycards.jsx';
 import './reset.css';
 import './App.css';
 
@@ -62,6 +65,9 @@ export default function App() {
 
                 const callBack = {
                     playingcards: PlayingCards,
+					pokemon: PokemonCards,
+                    numbers: NumberCards,
+                    rickandmorty: RickAndMortyCards,
                 }[cardType];
 
                 const cards = await callBack(numCards);

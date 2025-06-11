@@ -1,0 +1,20 @@
+.number-card {
+	width: 100%;
+	height: 100%;
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	border: 2px solid #e0e0e0;
+}
+
+.number-value {
+	font-size: 3rem;
+	font-weight: 800;
+	color: #232323;
+	text-align: center;
+	letter-spacing: 0.01em;
+}
