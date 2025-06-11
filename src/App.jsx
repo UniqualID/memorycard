@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import CardRow from './CardRow.jsx';
 import StartForm from './StartForm.jsx';
+import Loading from './Loading.jsx';
+import PlayingCards from './utils/playingcards.jsx';
 import './reset.css';
 import './App.css';
 
@@ -21,6 +23,7 @@ const INITIALCARDS = [
     { id: uuidv4(), component: <>L</> },
 ];
 const SHUFFLETIMES = 10; // Number of times to shuffle the cards
+const MINLOADTIME = 1000; // Minimum time to load the cards
 
 export default function App() {
     // State to track the game state: 'start', 'loading', 'pre-deal', 'shuffle', 'playing', 'won', or 'lost'
@@ -30,8 +33,9 @@ export default function App() {
     const [showEndModal, setShowEndModal] = useState(false);
     const highScore = useRef(0);
     const [selectedCards, setSelectedCards] = useState(new Set());
-	const [cardType, setCardType] = useState('');
-	const [difficultyLevel, setDifficultyLevel] = useState('');
+    const [cardType, setCardType] = useState('');
+    const [difficultyLevel, setDifficultyLevel] = useState('');
+    const [cards, setCards] = useState(null);
 
     useEffect(() => {
         if (gameState === 'won' || gameState === 'lost') {
@@ -43,11 +47,49 @@ export default function App() {
         }
     }, [gameState]);
 
+    useEffect(() => {
+        async function loadCards() {
+            if (gameState === 'loading') {
+                const startTime = Date.now();
+                console.log('loading difficulty level: ', difficultyLevel);
+                console.log('loading card type: ', cardType);
+
+                const numCards = {
+                    easy: 5,
+                    medium: 10,
+                    hard: 15,
+                }[difficultyLevel];
+
+                const callBack = {
+                    playingcards: PlayingCards,
+                }[cardType];
+
+                const cards = await callBack(numCards);
+				
+				const endTime = Date.now();
+				const loadTime = endTime - startTime;
+                setTimeout(() => {
+					setCards(cards);
+                    setGameState('pre-deal');
+                }, Math.max(0, Math.min(MINLOADTIME, MINLOADTIME - loadTime)));
+            }
+        }
+        loadCards();
+    }, [gameState]);
+
     const handlePlayAgain = () => {
         setSelectedCards(new Set());
         setGameState('playing');
         setScore(0);
         setShowEndModal(false);
+    };
+
+    const handleChangeSettings = () => {
+        setShowStartModal(true);
+        setShowEndModal(false);
+		setGameState('start');
+		setScore(0);
+		setCards(null);
     };
 
     if (gameState === 'pre-deal') {
@@ -60,16 +102,16 @@ export default function App() {
     if (gameState === 'start') {
         return (
             <StartForm
-                onStart={({ cardType, difficultyLevel }) => {
-                    setGameState('loading');
-                    setShowStartModal(false);
-                }}
+                setCardType={setCardType}
+                setDifficultyLevel={setDifficultyLevel}
+                setGameState={setGameState}
+                setShowStartModal={setShowStartModal}
             />
         );
     }
-	if (gameState === 'loading') {
-		return <Loading />;
-	}
+    if (gameState === 'loading') {
+        return <Loading />;
+    }
     return (
         <>
             <header className="header">
@@ -82,7 +124,8 @@ export default function App() {
 
             <main>
                 <CardRow
-                    initCards={INITIALCARDS}
+                    cards={cards}
+                    setCards={setCards}
                     gameState={gameState}
                     setGameState={setGameState}
                     score={score}
@@ -99,12 +142,13 @@ export default function App() {
             )}
             {showEndModal && (
                 <div className="modal">
-                    <div className="modal-box">
+                    <div className="modal-box end-modal">
                         <h2>
                             {gameState === 'won' ? 'You Won!' : 'You Lost!'}
                         </h2>
                         <p>Your score: {score}</p>
                         <button onClick={handlePlayAgain}>Play Again</button>
+                        <button onClick={handleChangeSettings}>Change Settings</button>
                     </div>
                 </div>
             )}

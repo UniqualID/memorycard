@@ -5,7 +5,8 @@ const SHUFFLEINTERVAL = 400;
 const SHUFFLEDURATION = 300; // Duration for shuffle animation
 const SHUFFLETIMES = 6; // Number of times to shuffle the cards
 export default function CardRow({
-    initCards,
+    cards,
+    setCards,
     gameState,
     setGameState,
     score,
@@ -13,7 +14,7 @@ export default function CardRow({
     selectedCards,
     setSelectedCards,
 }) {
-    const [cards, setCards] = React.useState(initCards);
+    // const [cards, setCards] = React.useState(initCards);
     const [dealt, setDealt] = useState(false);
     const [flipped, setFlipped] = useState([false, false, false]);
     const cardsRef = useRef(new Map());
@@ -99,7 +100,7 @@ export default function CardRow({
     }, [cards]);
 
     useEffect(() => {
-		offsets.current = []
+        offsets.current = [];
         cards.forEach((card, i) => {
             const el = cardsRef.current.get(card.id);
             const dummyEl = dummyCardsRef.current.get(i);

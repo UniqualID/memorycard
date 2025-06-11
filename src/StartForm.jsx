@@ -7,7 +7,7 @@ export default function StartForm({ setCardType, setDifficultyLevel, setGameStat
         const formData = new FormData(form);
         setCardType(formData.get('cardType'));
         setDifficultyLevel(formData.get('difficultyLevel'));
-        setGameState('pre-deal');
+        setGameState('loading');
         setShowStartModal(false);
     };
 
@@ -15,10 +15,10 @@ export default function StartForm({ setCardType, setDifficultyLevel, setGameStat
         <div className="modal">
             <div className="modal-box start-modal">
                 <h1>Welcome to the Memory Card Game!</h1>
-                <h2>
+                <p>
                     Please select the type of card you would like to
                     play with, along with the difficulty level.
-                </h2>
+                </p>
                 <form id="startingForm" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Card Type:</label>
@@ -27,10 +27,10 @@ export default function StartForm({ setCardType, setDifficultyLevel, setGameStat
                                 <input
                                     type="radio"
                                     name="cardType"
-                                    value="letters"
+                                    value="playingcards"
                                     defaultChecked
                                 />
-                                <span>Letters</span>
+                                <span>Playing Cards</span>
                             </label>
                             <label className="radio-label">
                                 <input

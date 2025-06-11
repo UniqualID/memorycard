@@ -1,7 +1,9 @@
 /* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
 	margin: 0;
 	padding: 0;
 }
@@ -46,7 +48,9 @@ svg {
 	fill: var(--text-clr);
 }
 
-button, input[type="submit"], input[type="reset"] {
+button,
+input[type="submit"],
+input[type="reset"] {
 	background: none;
 	color: inherit;
 	border: none;
@@ -69,20 +73,57 @@ body {
 	padding: 2rem 0 1rem 0;
 	background: #232323;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
 }
 
 .header h1 {
 	font-weight: 700;
 	letter-spacing: -0.02em;
+	font-size: 2.5rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.header img,
+.header svg {
+	width: 2.2rem;
+	height: 2.2rem;
+	margin-right: 0.5rem;
 }
 
 .infobox {
 	display: flex;
 	justify-content: center;
-	gap: 2rem;
-	font-size: 1.2rem;
-	margin-bottom: 2rem;
-	font-weight: 500;
+	gap: 3rem;
+	font-size: 1.4rem;
+	margin-bottom: 2.5rem;
+	font-weight: 600;
+	background: #181818;
+	border-radius: 12px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	padding: 1rem 2.5rem;
+	max-width: 420px;
+	margin-left: auto;
+	margin-right: auto;
+	border: 2px solid #ffd700;
+	margin-top: 2rem;
+}
+
+@media (max-width: 600px) {
+	.header h1 {
+		font-size: 1.5rem;
+	}
+
+	.infobox {
+		font-size: 1rem;
+		padding: 0.7rem 1rem;
+		gap: 1.2rem;
+		margin-top: 1rem;
+	}
 }
 
 #root {
@@ -214,6 +255,11 @@ main {
 	margin: 0 auto;
 }
 
+.modal-box.end-modal {
+	display: flex;
+	flex-direction: column;
+}
+
 .modal-box.start-modal {
 	width: 480px;
 	max-width: 90vw;
@@ -225,7 +271,7 @@ main {
 	margin-bottom: 1rem;
 }
 
-.modal-box h2 {
+.modal-box p {
 	font-weight: 600;
 	letter-spacing: -0.01em;
 	margin-bottom: 1.5rem;
@@ -237,7 +283,7 @@ main {
 	max-width: 100%;
 }
 
-.form-group > label {
+.form-group>label {
 	display: block;
 	margin-bottom: 0.5rem;
 	font-size: 1.1rem;
