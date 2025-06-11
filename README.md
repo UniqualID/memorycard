@@ -85,7 +85,7 @@ Want to add more card types? Just drop a new component in `src/components/`, a d
 
 ---
 
-## 💪 What You Demonstrated
+## 💪 What I Demonstrated
 
 - Modern React (hooks, functional components, modularity)
 - Real-world API integration (REST, async/await, error handling)
