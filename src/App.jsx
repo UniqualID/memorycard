@@ -23,7 +23,7 @@ const INITIALCARDS = [
 const SHUFFLETIMES = 10; // Number of times to shuffle the cards
 
 export default function App() {
-    // State to track the game state: 'start', 'pre-deal', 'shuffle', 'playing', 'won', or 'lost'
+    // State to track the game state: 'start', 'loading', 'pre-deal', 'shuffle', 'playing', 'won', or 'lost'
     const [gameState, setGameState] = useState('start');
     const [score, setScore] = useState(0);
     const [showStartModal, setShowStartModal] = useState(true);
@@ -56,18 +56,20 @@ export default function App() {
             setGameState('shuffle');
         }, 100);
     }
-
     highScore.current = Math.max(highScore.current, score);
     if (gameState === 'start') {
         return (
             <StartForm
-                setCardType={setCardType}
-                setDifficultyLevel={setDifficultyLevel}
-                setGameState={setGameState}
-                setShowStartModal={setShowStartModal}
+                onStart={({ cardType, difficultyLevel }) => {
+                    setGameState('loading');
+                    setShowStartModal(false);
+                }}
             />
         );
     }
+	if (gameState === 'loading') {
+		return <Loading />;
+	}
     return (
         <>
             <header className="header">

@@ -99,6 +99,7 @@ export default function CardRow({
     }, [cards]);
 
     useEffect(() => {
+		offsets.current = []
         cards.forEach((card, i) => {
             const el = cardsRef.current.get(card.id);
             const dummyEl = dummyCardsRef.current.get(i);
@@ -173,7 +174,6 @@ export default function CardRow({
                 {cards.map((_, i) => (
                     <div
                         className="dummy-card"
-                        style={{ outline: '1px solid red' }}
                         key={i}
                         ref={(el) => {
                             if (el) {

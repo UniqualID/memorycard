@@ -111,7 +111,7 @@ main {
 .card-display {
 	/* height: 240px; */
 	/* flex-grow: 1; */
-	background-color: black;
+	/* background-color: black; */
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
